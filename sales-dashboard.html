@@ -1,0 +1,618 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kavya Groups - Telecalling Executive</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+        background-color: #f3f6f9;
+      }
+      .sidebar-bg {
+        background-color: #0e1e36;
+      }
+      .nav-active {
+        background-color: #1c3358;
+        border-left: 3px solid #2dd4bf;
+        color: #ffffff;
+      }
+      .exec-tab {
+        display: none;
+      }
+      .exec-tab.active {
+        display: block;
+      }
+    </style>
+  </head>
+  <body class="flex h-screen overflow-hidden text-slate-800">
+    <!-- Left Sidebar -->
+    <aside
+      class="w-64 sidebar-bg text-slate-300 flex flex-col justify-between shrink-0"
+    >
+      <div>
+        <div
+          class="px-6 py-5 flex items-center gap-3 border-b border-slate-800"
+        >
+          <div
+            class="w-8 h-8 rounded-lg bg-teal-500/20 border border-teal-400/40 flex items-center justify-center text-teal-400 font-bold"
+          >
+            E
+          </div>
+          <div>
+            <p class="text-white font-bold text-sm">TELECALLING</p>
+            <p class="text-[11px] text-teal-300">Executive Workspace</p>
+          </div>
+        </div>
+
+        <div
+          class="px-6 py-4 flex items-center gap-3 border-b border-slate-800/80"
+        >
+          <img
+            src="https://ui-avatars.com/api/?name=Arun+M&background=14919b&color=fff"
+            class="w-10 h-10 rounded-full"
+          />
+          <div>
+            <p class="text-sm font-semibold text-white">Arun M.</p>
+            <p class="text-xs text-slate-400">ID: EMP-103 • Telecaller</p>
+          </div>
+        </div>
+
+        <nav class="mt-4 px-3 space-y-1 text-sm">
+          <button
+            onclick="switchExecTab('leadsTab', this)"
+            class="exec-nav w-full text-left nav-active flex items-center gap-3 px-3 py-2.5 rounded-r-lg font-medium transition"
+          >
+            <span>📞</span> Leads (Hot / Warm / Cold)
+          </button>
+          <button
+            onclick="switchExecTab('attendanceTab', this)"
+            class="exec-nav w-full text-left flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800/60 transition"
+          >
+            <span>🗓</span> My Attendance
+          </button>
+          <button
+            onclick="switchExecTab('overallReportTab', this)"
+            class="exec-nav w-full text-left flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800/60 transition"
+          >
+            <span>📊</span> Overall Report
+          </button>
+        </nav>
+      </div>
+
+      <div class="p-4 border-t border-slate-800">
+        <a
+          href="index.html"
+          class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-rose-300 hover:bg-rose-500/10 font-medium text-sm"
+        >
+          <span>↪</span> Logout
+        </a>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="flex-1 flex flex-col overflow-y-auto">
+      <!-- Top Header with Quick Attendance Punch -->
+      <header
+        class="bg-white border-b border-slate-200 px-8 py-3.5 flex flex-wrap items-center justify-between gap-3 sticky top-0 z-10"
+      >
+        <div>
+          <h1 id="execPageTitle" class="text-lg font-bold text-slate-900">
+            Lead Calling Desk — Hot, Warm & Cold
+          </h1>
+          <p class="text-[11px] text-slate-500">Monday, 23 Nov 2026</p>
+        </div>
+        <div class="flex items-center gap-3">
+          <button
+            id="punchBtn"
+            onclick="togglePunch()"
+            class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold px-3.5 py-2 rounded-lg shadow-sm transition"
+          >
+            ✓ Checked In (09:25 AM)
+          </button>
+          <a
+            href="index.html"
+            class="text-xs font-semibold bg-rose-50 text-rose-700 px-3 py-2 rounded-lg hover:bg-rose-100"
+            >Exit ↪</a
+          >
+        </div>
+      </header>
+
+      <main class="p-8 space-y-6 max-w-[1400px] w-full mx-auto">
+        <!-- ================= 1. LEADS TAB (HOT / WARM / COLD) ================= -->
+        <div id="leadsTab" class="exec-tab active space-y-6">
+          <!-- Filter Summary Cards -->
+          <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <button
+              onclick="filterLeads('ALL', this)"
+              class="lead-filter-card bg-[#0e1e36] text-white p-4 rounded-xl border text-left shadow-sm transition"
+            >
+              <p class="text-xs opacity-80">Total Assigned Leads</p>
+              <p id="countAll" class="text-2xl font-extrabold mt-1">6</p>
+            </button>
+            <button
+              onclick="filterLeads('Hot', this)"
+              class="lead-filter-card bg-white hover:bg-rose-50/40 text-slate-900 p-4 rounded-xl border border-slate-200 text-left shadow-sm transition"
+            >
+              <p class="text-xs font-semibold text-rose-600">🔥 Hot Leads</p>
+              <p
+                id="countHot"
+                class="text-2xl font-extrabold text-rose-600 mt-1"
+              >
+                2
+              </p>
+            </button>
+            <button
+              onclick="filterLeads('Warm', this)"
+              class="lead-filter-card bg-white hover:bg-amber-50/40 text-slate-900 p-4 rounded-xl border border-slate-200 text-left shadow-sm transition"
+            >
+              <p class="text-xs font-semibold text-amber-600">🌤 Warm Leads</p>
+              <p
+                id="countWarm"
+                class="text-2xl font-extrabold text-amber-600 mt-1"
+              >
+                2
+              </p>
+            </button>
+            <button
+              onclick="filterLeads('Cold', this)"
+              class="lead-filter-card bg-white hover:bg-sky-50/40 text-slate-900 p-4 rounded-xl border border-slate-200 text-left shadow-sm transition"
+            >
+              <p class="text-xs font-semibold text-sky-600">❄ Cold Leads</p>
+              <p
+                id="countCold"
+                class="text-2xl font-extrabold text-sky-600 mt-1"
+              >
+                2
+              </p>
+            </button>
+          </div>
+
+          <!-- Add Lead + Table -->
+          <div
+            class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-4"
+          >
+            <div class="flex flex-wrap items-center justify-between gap-3">
+              <h2 class="text-base font-bold text-slate-900">
+                Calling Queue & Lead Temperature
+              </h2>
+              <button
+                onclick="
+                  document
+                    .getElementById('addLeadForm')
+                    .classList.toggle('hidden')
+                "
+                class="bg-teal-600 hover:bg-teal-700 text-white text-xs font-semibold px-3.5 py-2 rounded-lg"
+              >
+                + Add New Lead
+              </button>
+            </div>
+
+            <form
+              id="addLeadForm"
+              onsubmit="addExecLead(event)"
+              class="hidden grid grid-cols-1 sm:grid-cols-4 gap-3 bg-slate-50 p-4 rounded-lg border text-xs"
+            >
+              <input
+                id="lName"
+                type="text"
+                required
+                placeholder="Customer Name"
+                class="border rounded-lg px-3 py-2 bg-white"
+              />
+              <input
+                id="lPhone"
+                type="text"
+                required
+                placeholder="Phone Number"
+                class="border rounded-lg px-3 py-2 bg-white"
+              />
+              <select id="lTemp" class="border rounded-lg px-3 py-2 bg-white">
+                <option value="Hot">🔥 Hot</option>
+                <option value="Warm" selected>🌤 Warm</option>
+                <option value="Cold">❄ Cold</option>
+              </select>
+              <button
+                type="submit"
+                class="bg-[#0e1e36] text-white font-semibold rounded-lg px-4 py-2"
+              >
+                Save Lead
+              </button>
+            </form>
+
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse text-xs">
+                <thead>
+                  <tr
+                    class="border-b border-slate-200 bg-slate-50 text-[11px] font-semibold text-slate-600 uppercase"
+                  >
+                    <th class="py-3 px-3">Lead ID</th>
+                    <th class="py-3 px-3">Customer Name</th>
+                    <th class="py-3 px-3">Phone</th>
+                    <th class="py-3 px-3">Lead Status (Hot / Warm / Cold)</th>
+                    <th class="py-3 px-3">Call Remarks</th>
+                    <th class="py-3 px-3 text-right">Action</th>
+                  </tr>
+                </thead>
+                <tbody
+                  id="execLeadsBody"
+                  class="divide-y divide-slate-100"
+                ></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- ================= 2. ATTENDANCE TAB ================= -->
+        <div id="attendanceTab" class="exec-tab space-y-5">
+          <div
+            class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm"
+          >
+            <div class="flex flex-wrap items-center justify-between gap-4 mb-5">
+              <div>
+                <h2 class="text-base font-bold text-slate-900">
+                  My Daily Attendance Log
+                </h2>
+                <p class="text-xs text-slate-500">
+                  November 2026 • Shift: 09:30 AM – 06:30 PM
+                </p>
+              </div>
+              <div class="flex gap-3 text-xs">
+                <span
+                  class="bg-emerald-50 text-emerald-700 font-semibold px-3 py-1.5 rounded-lg"
+                  >Present: 21 Days</span
+                >
+                <span
+                  class="bg-amber-50 text-amber-700 font-semibold px-3 py-1.5 rounded-lg"
+                  >Late: 1 Day</span
+                >
+              </div>
+            </div>
+
+            <table class="w-full text-left border-collapse text-xs">
+              <thead>
+                <tr
+                  class="border-b bg-slate-50 text-[11px] font-semibold text-slate-600 uppercase"
+                >
+                  <th class="py-3 px-3">Date</th>
+                  <th class="py-3 px-3">Check-In</th>
+                  <th class="py-3 px-3">Check-Out</th>
+                  <th class="py-3 px-3">Working Hours</th>
+                  <th class="py-3 px-3">Status</th>
+                </tr>
+              </thead>
+              <tbody id="execAttendanceBody" class="divide-y divide-slate-100">
+                <tr>
+                  <td class="py-3 px-3 font-semibold">23 Nov 2026 (Today)</td>
+                  <td class="py-3 px-3">09:25 AM</td>
+                  <td
+                    id="todayOutTime"
+                    class="py-3 px-3 text-teal-700 font-medium"
+                  >
+                    Active Shift
+                  </td>
+                  <td class="py-3 px-3">5h 40m</td>
+                  <td class="py-3 px-3">
+                    <span
+                      class="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded font-semibold"
+                      >Present</span
+                    >
+                  </td>
+                </tr>
+                <tr>
+                  <td class="py-3 px-3">22 Nov 2026</td>
+                  <td class="py-3 px-3">09:28 AM</td>
+                  <td class="py-3 px-3">06:32 PM</td>
+                  <td class="py-3 px-3">9h 04m</td>
+                  <td class="py-3 px-3">
+                    <span
+                      class="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded font-semibold"
+                      >Present</span
+                    >
+                  </td>
+                </tr>
+                <tr>
+                  <td class="py-3 px-3">21 Nov 2026</td>
+                  <td class="py-3 px-3">09:45 AM</td>
+                  <td class="py-3 px-3">06:35 PM</td>
+                  <td class="py-3 px-3">8h 50m</td>
+                  <td class="py-3 px-3">
+                    <span
+                      class="bg-amber-100 text-amber-700 px-2 py-0.5 rounded font-semibold"
+                      >Late</span
+                    >
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- ================= 3. OVERALL REPORT TAB (SEPARATE FULL REPORT) ================= -->
+        <div id="overallReportTab" class="exec-tab space-y-6">
+          <!-- Top Overall KPIs -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            <div
+              class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm"
+            >
+              <p class="text-xs font-medium text-slate-500">
+                Monthly Calls Completed
+              </p>
+              <p class="text-3xl font-extrabold text-slate-900 mt-1">1,420</p>
+              <p class="text-xs text-emerald-600 font-semibold mt-1">
+                94.6% of 1,500 Target
+              </p>
+            </div>
+            <div
+              class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm"
+            >
+              <p class="text-xs font-medium text-slate-500">
+                Hot Lead Conversion
+              </p>
+              <p class="text-3xl font-extrabold text-rose-600 mt-1">34%</p>
+              <p class="text-xs text-slate-500 mt-1">48 Hot Leads Closed</p>
+            </div>
+            <div
+              class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm"
+            >
+              <p class="text-xs font-medium text-slate-500">Attendance Score</p>
+              <p class="text-3xl font-extrabold text-teal-600 mt-1">96%</p>
+              <p class="text-xs text-slate-500 mt-1">21/22 Working Days</p>
+            </div>
+            <div
+              class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm"
+            >
+              <p class="text-xs font-medium text-slate-500">
+                Overall Performance Grade
+              </p>
+              <p class="text-3xl font-extrabold text-amber-600 mt-1">A+</p>
+              <p class="text-xs text-emerald-600 font-semibold mt-1">
+                Top 2 in Telecalling
+              </p>
+            </div>
+          </div>
+
+          <!-- Charts Row -->
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div
+              class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm"
+            >
+              <h3 class="text-sm font-bold text-slate-900 mb-4">
+                Lead Breakdown (Hot vs. Warm vs. Cold)
+              </h3>
+              <div class="h-64 flex items-center justify-center">
+                <canvas id="leadTempChart"></canvas>
+              </div>
+            </div>
+
+            <div
+              class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm"
+            >
+              <h3 class="text-sm font-bold text-slate-900 mb-4">
+                Weekly Call Target vs. Completed
+              </h3>
+              <div class="h-64">
+                <canvas id="weeklyCallsChart"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script>
+      let activeLeadFilter = "ALL";
+      let checkedOut = false;
+
+      function switchExecTab(tabId, el) {
+        document
+          .querySelectorAll(".exec-tab")
+          .forEach((t) => t.classList.remove("active"));
+        document.getElementById(tabId).classList.add("active");
+        document
+          .querySelectorAll(".exec-nav")
+          .forEach((b) => b.classList.remove("nav-active"));
+        if (el) el.classList.add("nav-active");
+
+        const titles = {
+          leadsTab: "Lead Calling Desk — Hot, Warm & Cold",
+          attendanceTab: "Executive Attendance & Shift Log",
+          overallReportTab: "Overall Telecalling Performance Report",
+        };
+        document.getElementById("execPageTitle").textContent = titles[tabId];
+      }
+
+      function togglePunch() {
+        const btn = document.getElementById("punchBtn");
+        if (!checkedOut) {
+          checkedOut = true;
+          btn.textContent = "✓ Checked Out (06:30 PM)";
+          btn.className =
+            "bg-slate-700 text-white text-xs font-semibold px-3.5 py-2 rounded-lg";
+          document.getElementById("todayOutTime").textContent = "06:30 PM";
+        }
+      }
+
+      let execLeads = [
+        {
+          id: "LD-501",
+          name: "Suresh Raina",
+          phone: "+91 98401 11223",
+          temp: "Hot",
+          note: "Ready to book site visit tomorrow",
+        },
+        {
+          id: "LD-502",
+          name: "Lakshmi Priya",
+          phone: "+91 97890 44556",
+          temp: "Warm",
+          note: "Asked for brochure on WhatsApp",
+        },
+        {
+          id: "LD-503",
+          name: "Gowtham K.",
+          phone: "+91 99402 77889",
+          temp: "Cold",
+          note: "Call back next month",
+        },
+        {
+          id: "LD-504",
+          name: "Nandhini R.",
+          phone: "+91 98840 33221",
+          temp: "Hot",
+          note: "Payment link requested",
+        },
+        {
+          id: "LD-505",
+          name: "Vignesh M.",
+          phone: "+91 97909 66554",
+          temp: "Warm",
+          note: "Comparing pricing options",
+        },
+        {
+          id: "LD-506",
+          name: "Harish Babu",
+          phone: "+91 98412 99001",
+          temp: "Cold",
+          note: "Number busy — retry Friday",
+        },
+      ];
+
+      function filterLeads(temp, btnEl) {
+        activeLeadFilter = temp;
+        document.querySelectorAll(".lead-filter-card").forEach((c) => {
+          c.classList.remove("bg-[#0e1e36]", "text-white");
+          c.classList.add("bg-white", "text-slate-900");
+        });
+        if (btnEl) {
+          btnEl.classList.remove("bg-white", "text-slate-900");
+          btnEl.classList.add("bg-[#0e1e36]", "text-white");
+        }
+        renderExecLeads();
+      }
+
+      function renderExecLeads() {
+        const tbody = document.getElementById("execLeadsBody");
+        tbody.innerHTML = "";
+        let hot = 0,
+          warm = 0,
+          cold = 0;
+
+        execLeads.forEach((lead, idx) => {
+          if (lead.temp === "Hot") hot++;
+          if (lead.temp === "Warm") warm++;
+          if (lead.temp === "Cold") cold++;
+
+          if (activeLeadFilter !== "ALL" && lead.temp !== activeLeadFilter)
+            return;
+
+          const badgeStyle =
+            lead.temp === "Hot"
+              ? "bg-rose-100 text-rose-700"
+              : lead.temp === "Warm"
+                ? "bg-amber-100 text-amber-700"
+                : "bg-sky-100 text-sky-700";
+
+          tbody.innerHTML += `
+          <tr class="hover:bg-slate-50">
+            <td class="py-3 px-3 font-semibold text-slate-800">${lead.id}</td>
+            <td class="py-3 px-3 font-semibold text-slate-900">${lead.name}</td>
+            <td class="py-3 px-3 text-slate-600">${lead.phone}</td>
+            <td class="py-3 px-3">
+              <select onchange="changeLeadTemp(${idx}, this.value)" class="border border-slate-200 rounded px-2.5 py-1 text-xs font-semibold ${badgeStyle}">
+                <option value="Hot" ${lead.temp === "Hot" ? "selected" : ""}>🔥 Hot</option>
+                <option value="Warm" ${lead.temp === "Warm" ? "selected" : ""}>🌤 Warm</option>
+                <option value="Cold" ${lead.temp === "Cold" ? "selected" : ""}>❄ Cold</option>
+              </select>
+            </td>
+            <td class="py-3 px-3">
+              <input type="text" value="${lead.note}" onchange="execLeads[${idx}].note = this.value" class="w-full border border-slate-200 rounded px-2 py-1 text-xs text-slate-600">
+            </td>
+            <td class="py-3 px-3 text-right">
+              <a href="tel:${lead.phone}" class="bg-teal-50 hover:bg-teal-600 text-teal-700 hover:text-white px-2.5 py-1 rounded text-[11px] font-semibold transition">📞 Call</a>
+            </td>
+          </tr>
+        `;
+        });
+
+        document.getElementById("countAll").textContent = execLeads.length;
+        document.getElementById("countHot").textContent = hot;
+        document.getElementById("countWarm").textContent = warm;
+        document.getElementById("countCold").textContent = cold;
+      }
+
+      function changeLeadTemp(idx, val) {
+        execLeads[idx].temp = val;
+        renderExecLeads();
+      }
+
+      function addExecLead(e) {
+        e.preventDefault();
+        execLeads.unshift({
+          id: "LD-" + (501 + execLeads.length),
+          name: document.getElementById("lName").value,
+          phone: document.getElementById("lPhone").value,
+          temp: document.getElementById("lTemp").value,
+          note: "Newly added lead",
+        });
+        e.target.reset();
+        document.getElementById("addLeadForm").classList.add("hidden");
+        renderExecLeads();
+      }
+
+      // Overall Report Charts
+      new Chart(document.getElementById("leadTempChart"), {
+        type: "doughnut",
+        data: {
+          labels: ["Hot Leads (32%)", "Warm Leads (43%)", "Cold Leads (25%)"],
+          datasets: [
+            {
+              data: [32, 43, 25],
+              backgroundColor: ["#e11d48", "#f59e0b", "#0284c7"],
+              borderWidth: 0,
+            },
+          ],
+        },
+        options: {
+          cutout: "62%",
+          responsive: true,
+          maintainAspectRatio: false,
+        },
+      });
+
+      new Chart(document.getElementById("weeklyCallsChart"), {
+        type: "bar",
+        data: {
+          labels: ["Week 1", "Week 2", "Week 3", "Week 4"],
+          datasets: [
+            {
+              label: "Calls Completed",
+              data: [340, 365, 355, 360],
+              backgroundColor: "#14919b",
+              borderRadius: 6,
+            },
+            {
+              label: "Weekly Target",
+              data: [375, 375, 375, 375],
+              backgroundColor: "#0e1e36",
+              borderRadius: 6,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: { y: { beginAtZero: true } },
+        },
+      });
+
+      renderExecLeads();
+    </script>
+  </body>
+</html>

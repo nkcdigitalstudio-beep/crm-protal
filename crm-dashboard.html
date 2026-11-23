@@ -1,0 +1,895 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kavya Groups Tools CRM</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        font-family:
+          "Inter",
+          -apple-system,
+          BlinkMacSystemFont,
+          sans-serif;
+        background-color: #f4f6f9;
+        -webkit-font-smoothing: antialiased;
+      }
+      .crm-sidebar {
+        background-color: #0b4a8f;
+      }
+      .crm-nav-active {
+        background-color: rgba(255, 255, 255, 0.16);
+        border-left: 3px solid #ffffff;
+        color: #ffffff;
+        font-weight: 600;
+      }
+      .crm-tab {
+        display: none;
+      }
+      .crm-tab.active {
+        display: block;
+      }
+    </style>
+  </head>
+  <body class="flex h-screen overflow-hidden text-slate-800">
+    <!-- Left Blue Sidebar -->
+    <aside
+      class="w-60 crm-sidebar text-blue-100 flex flex-col justify-between shrink-0"
+    >
+      <div>
+        <!-- Sidebar Header -->
+        <div class="px-5 py-5 border-b border-blue-800/60">
+          <div class="flex items-center gap-2.5">
+            <div
+              class="w-8 h-8 rounded-lg bg-white/15 flex items-center justify-center text-white font-bold text-base"
+            >
+              K
+            </div>
+            <div>
+              <p
+                class="text-white font-bold text-sm tracking-tight leading-tight"
+              >
+                Kavya Groups
+              </p>
+              <p class="text-[11px] text-blue-200 font-medium">Tools CRM</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Navigation Menu -->
+        <nav class="mt-4 px-2.5 space-y-1 text-[13.5px]">
+          <button
+            onclick="switchCrmTab('dashboardTab', this)"
+            class="crm-nav w-full text-left crm-nav-active flex items-center gap-3 px-3.5 py-2.5 rounded-r-lg transition"
+          >
+            <span>▦</span> Dashboard
+          </button>
+          <button
+            onclick="switchCrmTab('attendanceTab', this)"
+            class="crm-nav w-full text-left flex items-center gap-3 px-3.5 py-2.5 rounded-lg hover:bg-white/10 transition"
+          >
+            <span>🗓</span> Attendance
+          </button>
+          <button
+            onclick="switchCrmTab('customersTab', this)"
+            class="crm-nav w-full text-left flex items-center justify-between px-3.5 py-2.5 rounded-lg hover:bg-white/10 transition"
+          >
+            <span class="flex items-center gap-3"
+              ><span>👥</span> Customers</span
+            >
+            <span
+              id="customerNavCount"
+              class="bg-white/20 text-white text-[11px] px-2 py-0.5 rounded-full font-semibold"
+              >200</span
+            >
+          </button>
+          <button
+            onclick="switchCrmTab('notificationsTab', this)"
+            class="crm-nav w-full text-left flex items-center gap-3 px-3.5 py-2.5 rounded-lg hover:bg-white/10 transition"
+          >
+            <span>🔔</span> Notifications
+          </button>
+          <button
+            onclick="switchCrmTab('inquiriesTab', this)"
+            class="crm-nav w-full text-left flex items-center gap-3 px-3.5 py-2.5 rounded-lg hover:bg-white/10 transition"
+          >
+            <span>💬</span> Inquiries
+          </button>
+          <button
+            onclick="switchCrmTab('expensesTab', this)"
+            class="crm-nav w-full text-left flex items-center gap-3 px-3.5 py-2.5 rounded-lg hover:bg-white/10 transition"
+          >
+            <span>₹</span> Expenses
+          </button>
+          <button
+            onclick="switchCrmTab('ticketsTab', this)"
+            class="crm-nav w-full text-left flex items-center gap-3 px-3.5 py-2.5 rounded-lg hover:bg-white/10 transition"
+          >
+            <span>🎫</span> Tickets
+          </button>
+          <button
+            onclick="switchCrmTab('propertiesTab', this)"
+            class="crm-nav w-full text-left flex items-center gap-3 px-3.5 py-2.5 rounded-lg hover:bg-white/10 transition"
+          >
+            <span>🏢</span> Properties
+          </button>
+          <button
+            onclick="switchCrmTab('settingsTab', this)"
+            class="crm-nav w-full text-left flex items-center gap-3 px-3.5 py-2.5 rounded-lg hover:bg-white/10 transition"
+          >
+            <span>⚙</span> Settings
+          </button>
+        </nav>
+      </div>
+
+      <!-- Bottom Logout Button -->
+      <div class="p-3 border-t border-blue-800/60">
+        <a
+          href="index.html"
+          class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-lg bg-rose-500/20 hover:bg-rose-500/30 text-white font-semibold text-xs transition"
+        >
+          <span>↪</span> Logout
+        </a>
+      </div>
+    </aside>
+
+    <!-- Main Workspace -->
+    <div class="flex-1 flex flex-col overflow-y-auto">
+      <!-- Top Bar -->
+      <header
+        class="bg-white border-b border-slate-200 px-7 py-3 flex items-center justify-between sticky top-0 z-10"
+      >
+        <div class="flex items-center gap-4">
+          <span class="font-bold text-slate-900 text-base tracking-tight"
+            >Kavya Groups Tools CRM</span
+          >
+          <div class="relative w-72 hidden sm:block">
+            <input
+              id="crmGlobalSearch"
+              onkeyup="filterCustomers()"
+              type="text"
+              placeholder="Search leads, customers, reports..."
+              class="w-full bg-slate-100 text-xs rounded-lg pl-8 pr-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-600"
+            />
+            <span class="absolute left-2.5 top-2 text-slate-400 text-xs"
+              >🔍</span
+            >
+          </div>
+        </div>
+
+        <!-- Right Controls: Admin Profile (Clickable) + Logout -->
+        <div class="flex items-center gap-3">
+          <button
+            onclick="openAdminProfileModal()"
+            class="flex items-center gap-2.5 bg-slate-50 hover:bg-blue-50 border border-slate-200 px-3 py-1.5 rounded-full transition text-left"
+          >
+            <img
+              src="https://ui-avatars.com/api/?name=Admin+Profile&background=0b4a8f&color=fff"
+              alt="Admin"
+              class="w-7 h-7 rounded-full object-cover"
+            />
+            <div>
+              <p class="text-xs font-semibold text-slate-900 leading-none">
+                Admin Profile
+              </p>
+              <p class="text-[10px] text-slate-500 mt-0.5">
+                CRM Administrator ▾
+              </p>
+            </div>
+          </button>
+
+          <a
+            href="index.html"
+            class="bg-rose-50 hover:bg-rose-600 text-rose-700 hover:text-white text-xs font-semibold px-3 py-2 rounded-lg transition"
+          >
+            Logout ↪
+          </a>
+        </div>
+      </header>
+
+      <main class="p-7 space-y-6 max-w-[1400px] w-full mx-auto">
+        <!-- ================= 1. DASHBOARD TAB ================= -->
+        <div id="dashboardTab" class="crm-tab active space-y-6">
+          <div class="flex flex-wrap items-center justify-between gap-4">
+            <h1 class="text-2xl font-bold text-slate-900 tracking-tight">
+              Dashboard
+            </h1>
+            <div class="flex items-center gap-2 text-xs">
+              <select
+                class="bg-white border border-slate-200 rounded-lg px-3 py-1.5 font-medium text-slate-700"
+              >
+                <option>2026</option>
+                <option>2025</option>
+              </select>
+              <select
+                class="bg-white border border-slate-200 rounded-lg px-3 py-1.5 font-medium text-slate-700"
+              >
+                <option>November</option>
+                <option>October</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Top 3 KPI Cards -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+            <div
+              onclick="
+                switchCrmTab(
+                  'customersTab',
+                  document.querySelectorAll('.crm-nav')[2],
+                )
+              "
+              class="cursor-pointer bg-white p-6 rounded-xl border border-slate-200/80 shadow-sm hover:border-blue-400 transition"
+            >
+              <p
+                class="text-xs font-semibold text-slate-500 uppercase tracking-wider"
+              >
+                Overall Customers
+              </p>
+              <p
+                id="kpiTotalCustomers"
+                class="text-4xl font-extrabold text-slate-900 mt-2 tracking-tight"
+              >
+                200
+              </p>
+              <p class="text-xs font-semibold text-emerald-600 mt-1.5">
+                ↑ 12.4% this month
+                <span class="text-slate-400 font-normal">(Click to view)</span>
+              </p>
+            </div>
+
+            <div
+              onclick="
+                switchCrmTab(
+                  'ticketsTab',
+                  document.querySelectorAll('.crm-nav')[6],
+                )
+              "
+              class="cursor-pointer bg-white p-6 rounded-xl border border-slate-200/80 shadow-sm hover:border-blue-400 transition"
+            >
+              <p
+                class="text-xs font-semibold text-slate-500 uppercase tracking-wider"
+              >
+                Open Tickets
+              </p>
+              <p
+                class="text-4xl font-extrabold text-slate-900 mt-2 tracking-tight"
+              >
+                15
+              </p>
+              <p class="text-xs font-semibold text-amber-600 mt-1.5">
+                3 need immediate attention
+              </p>
+            </div>
+
+            <div
+              class="bg-white p-6 rounded-xl border border-slate-200/80 shadow-sm"
+            >
+              <p
+                class="text-xs font-semibold text-slate-500 uppercase tracking-wider"
+              >
+                Team Performance
+              </p>
+              <p
+                class="text-4xl font-extrabold text-slate-900 mt-2 tracking-tight"
+              >
+                86%
+              </p>
+              <p class="text-xs font-semibold text-emerald-600 mt-1.5">
+                ↑ 5.2% this month
+              </p>
+            </div>
+          </div>
+
+          <!-- Middle 2 Progress Report Cards -->
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+            <!-- Overall Report -->
+            <div
+              class="bg-white p-6 rounded-xl border border-slate-200/80 shadow-sm space-y-4"
+            >
+              <h2 class="text-base font-bold text-slate-900">Overall Report</h2>
+              <div class="space-y-3.5 text-xs">
+                <div>
+                  <div class="flex justify-between font-semibold mb-1">
+                    <span class="text-slate-600">Leads</span
+                    ><span class="text-slate-900">72%</span>
+                  </div>
+                  <div
+                    class="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden"
+                  >
+                    <div
+                      class="bg-[#0b4a8f] h-2.5 rounded-full"
+                      style="width: 72%"
+                    ></div>
+                  </div>
+                </div>
+                <div>
+                  <div class="flex justify-between font-semibold mb-1">
+                    <span class="text-slate-600">Customers</span
+                    ><span class="text-slate-900">85%</span>
+                  </div>
+                  <div
+                    class="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden"
+                  >
+                    <div
+                      class="bg-[#0b4a8f] h-2.5 rounded-full"
+                      style="width: 85%"
+                    ></div>
+                  </div>
+                </div>
+                <div>
+                  <div class="flex justify-between font-semibold mb-1">
+                    <span class="text-slate-600">Tickets</span
+                    ><span class="text-slate-900">58%</span>
+                  </div>
+                  <div
+                    class="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden"
+                  >
+                    <div
+                      class="bg-[#0b4a8f] h-2.5 rounded-full"
+                      style="width: 58%"
+                    ></div>
+                  </div>
+                </div>
+                <div>
+                  <div class="flex justify-between font-semibold mb-1">
+                    <span class="text-slate-600">Revenue</span
+                    ><span class="text-slate-900">92%</span>
+                  </div>
+                  <div
+                    class="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden"
+                  >
+                    <div
+                      class="bg-[#0b4a8f] h-2.5 rounded-full"
+                      style="width: 92%"
+                    ></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Performance Report -->
+            <div
+              class="bg-white p-6 rounded-xl border border-slate-200/80 shadow-sm space-y-4"
+            >
+              <h2 class="text-base font-bold text-slate-900">
+                Performance Report
+              </h2>
+              <div class="space-y-3.5 text-xs">
+                <div>
+                  <div class="flex justify-between font-semibold mb-1">
+                    <span class="text-slate-700">Sarah Jenkins</span
+                    ><span class="text-slate-900">90%</span>
+                  </div>
+                  <div
+                    class="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden"
+                  >
+                    <div
+                      class="bg-[#0b4a8f] h-2.5 rounded-full"
+                      style="width: 90%"
+                    ></div>
+                  </div>
+                </div>
+                <div>
+                  <div class="flex justify-between font-semibold mb-1">
+                    <span class="text-slate-700">John Doe</span
+                    ><span class="text-slate-900">82%</span>
+                  </div>
+                  <div
+                    class="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden"
+                  >
+                    <div
+                      class="bg-[#0b4a8f] h-2.5 rounded-full"
+                      style="width: 82%"
+                    ></div>
+                  </div>
+                </div>
+                <div>
+                  <div class="flex justify-between font-semibold mb-1">
+                    <span class="text-slate-700">Alice Smith</span
+                    ><span class="text-slate-900">78%</span>
+                  </div>
+                  <div
+                    class="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden"
+                  >
+                    <div
+                      class="bg-[#0b4a8f] h-2.5 rounded-full"
+                      style="width: 78%"
+                    ></div>
+                  </div>
+                </div>
+                <div>
+                  <div class="flex justify-between font-semibold mb-1">
+                    <span class="text-slate-700">Bob Johnson</span
+                    ><span class="text-slate-900">95%</span>
+                  </div>
+                  <div
+                    class="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden"
+                  >
+                    <div
+                      class="bg-[#0b4a8f] h-2.5 rounded-full"
+                      style="width: 95%"
+                    ></div>
+                  </div>
+                </div>
+                <div>
+                  <div class="flex justify-between font-semibold mb-1">
+                    <span class="text-slate-700">Emily Brown</span
+                    ><span class="text-slate-900">68%</span>
+                  </div>
+                  <div
+                    class="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden"
+                  >
+                    <div
+                      class="bg-[#0b4a8f] h-2.5 rounded-full"
+                      style="width: 68%"
+                    ></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Recent Activity -->
+          <div
+            class="bg-white p-6 rounded-xl border border-slate-200/80 shadow-sm"
+          >
+            <h2 class="text-base font-bold text-slate-900 mb-2">
+              Recent Activity
+            </h2>
+            <p class="text-xs text-slate-600 font-medium">
+              3 new enquiries • 2 customer updates • 1 attendance correction
+            </p>
+          </div>
+        </div>
+
+        <!-- ================= 2. CUSTOMERS TAB (FULLY WORKING) ================= -->
+        <div id="customersTab" class="crm-tab space-y-6">
+          <div class="flex flex-wrap items-center justify-between gap-4">
+            <div>
+              <h1 class="text-2xl font-bold text-slate-900 tracking-tight">
+                Customers Directory
+              </h1>
+              <p class="text-xs text-slate-500 mt-0.5">
+                Manage active clients, leads, phone numbers, and deal stages.
+              </p>
+            </div>
+            <button
+              onclick="toggleAddCustomerForm()"
+              class="bg-[#0b4a8f] hover:bg-blue-800 text-white text-xs font-semibold px-4 py-2.5 rounded-lg shadow-sm transition"
+            >
+              + Add New Customer
+            </button>
+          </div>
+
+          <!-- Add Customer Form (Collapsible) -->
+          <div
+            id="addCustomerBox"
+            class="hidden bg-white p-5 rounded-xl border border-blue-200 shadow-sm"
+          >
+            <h3 class="text-sm font-bold text-slate-900 mb-3">
+              Add New Customer
+            </h3>
+            <form
+              onsubmit="addNewCustomer(event)"
+              class="grid grid-cols-1 sm:grid-cols-4 gap-3 text-xs"
+            >
+              <input
+                id="custName"
+                type="text"
+                required
+                placeholder="Customer Name"
+                class="border border-slate-200 rounded-lg px-3 py-2"
+              />
+              <input
+                id="custPhone"
+                type="text"
+                required
+                placeholder="Phone (+91 98765...)"
+                class="border border-slate-200 rounded-lg px-3 py-2"
+              />
+              <input
+                id="custCompany"
+                type="text"
+                required
+                placeholder="Company / Property"
+                class="border border-slate-200 rounded-lg px-3 py-2"
+              />
+              <div class="flex gap-2">
+                <select
+                  id="custStatus"
+                  class="border border-slate-200 rounded-lg px-2.5 py-2 bg-white flex-1"
+                >
+                  <option value="Active">Active</option>
+                  <option value="Follow-Up">Follow-Up</option>
+                  <option value="Closed Won">Closed Won</option>
+                </select>
+                <button
+                  type="submit"
+                  class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-4 py-2 rounded-lg"
+                >
+                  Save
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Customers Table -->
+          <div
+            class="bg-white p-6 rounded-xl border border-slate-200/80 shadow-sm"
+          >
+            <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+              <input
+                id="customerSearchInput"
+                onkeyup="filterCustomers()"
+                type="text"
+                placeholder="Filter customers by name, phone, or status..."
+                class="w-72 bg-slate-50 border border-slate-200 text-xs rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-600"
+              />
+              <select
+                id="customerStatusFilter"
+                onchange="filterCustomers()"
+                class="border border-slate-200 rounded-lg px-3 py-2 text-xs font-medium text-slate-700 bg-white"
+              >
+                <option value="ALL">All Status</option>
+                <option value="Active">Active</option>
+                <option value="Follow-Up">Follow-Up</option>
+                <option value="Closed Won">Closed Won</option>
+              </select>
+            </div>
+
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse">
+                <thead>
+                  <tr
+                    class="border-b border-slate-200 bg-slate-50 text-[11px] font-semibold text-slate-600 uppercase"
+                  >
+                    <th class="py-3 px-3">Customer ID</th>
+                    <th class="py-3 px-3">Name</th>
+                    <th class="py-3 px-3">Phone</th>
+                    <th class="py-3 px-3">Requirement / Company</th>
+                    <th class="py-3 px-3">Assigned To</th>
+                    <th class="py-3 px-3">Status</th>
+                  </tr>
+                </thead>
+                <tbody
+                  id="customersTableBody"
+                  class="divide-y divide-slate-100 text-xs"
+                ></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- ================= 3. OTHER SIDEBAR TABS ================= -->
+        <div id="attendanceTab" class="crm-tab">
+          <div
+            class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm"
+          >
+            <h2 class="text-lg font-bold text-slate-900 mb-2">
+              CRM Staff Attendance
+            </h2>
+            <p class="text-xs text-slate-500 mb-4">
+              Today's check-in logs for CRM executives.
+            </p>
+            <div class="text-xs space-y-2">
+              <div class="p-3 bg-slate-50 rounded-lg flex justify-between">
+                <span><b>Sarah Jenkins</b> — 09:25 AM</span
+                ><span class="text-emerald-600 font-semibold">Present</span>
+              </div>
+              <div class="p-3 bg-slate-50 rounded-lg flex justify-between">
+                <span><b>John Doe</b> — 09:32 AM</span
+                ><span class="text-emerald-600 font-semibold">Present</span>
+              </div>
+              <div class="p-3 bg-slate-50 rounded-lg flex justify-between">
+                <span><b>Bob Johnson</b> — 09:20 AM</span
+                ><span class="text-emerald-600 font-semibold">Present</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="notificationsTab" class="crm-tab">
+          <div
+            class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-3"
+          >
+            <h2 class="text-lg font-bold text-slate-900">Notifications</h2>
+            <div
+              class="p-3 bg-blue-50 text-blue-900 rounded-lg text-xs font-medium"
+            >
+              🔔 New customer enquiry assigned to Sarah Jenkins.
+            </div>
+            <div
+              class="p-3 bg-slate-50 text-slate-700 rounded-lg text-xs font-medium"
+            >
+              ✅ Monthly revenue target reached 92%.
+            </div>
+          </div>
+        </div>
+
+        <div id="inquiriesTab" class="crm-tab">
+          <div
+            class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm"
+          >
+            <h2 class="text-lg font-bold text-slate-900 mb-2">
+              Customer Inquiries
+            </h2>
+            <p class="text-xs text-slate-600">
+              3 active inquiries awaiting follow-up calls today.
+            </p>
+          </div>
+        </div>
+
+        <div id="expensesTab" class="crm-tab">
+          <div
+            class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm"
+          >
+            <h2 class="text-lg font-bold text-slate-900 mb-2">
+              Department Expenses
+            </h2>
+            <p class="text-xs text-slate-600">
+              November 2026 CRM Operations Expense: <b>₹42,500</b> (Within
+              Budget).
+            </p>
+          </div>
+        </div>
+
+        <div id="ticketsTab" class="crm-tab">
+          <div
+            class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm"
+          >
+            <h2 class="text-lg font-bold text-slate-900 mb-2">
+              CRM Support Tickets (15 Open)
+            </h2>
+            <p class="text-xs text-slate-600">
+              3 high-priority customer tickets assigned to CRM support team.
+            </p>
+          </div>
+        </div>
+
+        <div id="propertiesTab" class="crm-tab">
+          <div
+            class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm"
+          >
+            <h2 class="text-lg font-bold text-slate-900 mb-2">
+              Listed Properties & Projects
+            </h2>
+            <p class="text-xs text-slate-600">
+              18 active commercial & residential listings synced with CRM.
+            </p>
+          </div>
+        </div>
+
+        <div id="settingsTab" class="crm-tab">
+          <div
+            class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm"
+          >
+            <h2 class="text-lg font-bold text-slate-900 mb-2">CRM Settings</h2>
+            <p class="text-xs text-slate-600">
+              Logged in as <b>CRM Administrator</b> • Notifications & Lead
+              Auto-Assign Enabled.
+            </p>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- ================= ADMIN PROFILE MODAL (OPENS ON CLICK) ================= -->
+    <div
+      id="adminProfileModal"
+      class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-50 flex items-center justify-center p-4"
+    >
+      <div
+        class="bg-white rounded-2xl border border-slate-200 shadow-xl max-w-md w-full p-6 space-y-5"
+      >
+        <div
+          class="flex items-center justify-between border-b border-slate-100 pb-4"
+        >
+          <div class="flex items-center gap-3">
+            <img
+              src="https://ui-avatars.com/api/?name=Sarah+J&background=0b4a8f&color=fff"
+              class="w-12 h-12 rounded-full"
+            />
+            <div>
+              <h3 class="text-base font-bold text-slate-900">Sarah Jenkins</h3>
+              <p class="text-xs text-blue-700 font-semibold">
+                CRM Administrator • Kavya Groups
+              </p>
+            </div>
+          </div>
+          <button
+            onclick="closeAdminProfileModal()"
+            class="text-slate-400 hover:text-slate-700 text-lg font-bold"
+          >
+            ✕
+          </button>
+        </div>
+
+        <div class="space-y-2.5 text-xs">
+          <div class="flex justify-between py-1.5 border-b border-slate-100">
+            <span class="text-slate-500">Admin ID</span>
+            <span class="font-semibold text-slate-800">ADM-KG-01</span>
+          </div>
+          <div class="flex justify-between py-1.5 border-b border-slate-100">
+            <span class="text-slate-500">Email</span>
+            <span class="font-semibold text-slate-800"
+              >admin@kavyagroups.com</span
+            >
+          </div>
+          <div class="flex justify-between py-1.5 border-b border-slate-100">
+            <span class="text-slate-500">Role Access</span>
+            <span
+              class="bg-emerald-50 text-emerald-700 font-semibold px-2 py-0.5 rounded"
+              >Full CRM & Admin Control</span
+            >
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2.5 pt-2">
+          <a
+            href="../admin-dashboard.html"
+            class="flex-1 text-center bg-[#0b4a8f] hover:bg-blue-800 text-white text-xs font-semibold py-2.5 rounded-lg transition"
+          >
+            Open Admin Portal →
+          </a>
+          <a
+            href="index.html"
+            class="bg-rose-50 hover:bg-rose-600 text-rose-700 hover:text-white text-xs font-semibold px-4 py-2.5 rounded-lg transition"
+          >
+            Logout
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function switchCrmTab(tabId, btnEl) {
+        document
+          .querySelectorAll(".crm-tab")
+          .forEach((t) => t.classList.remove("active"));
+        document.getElementById(tabId).classList.add("active");
+
+        document
+          .querySelectorAll(".crm-nav")
+          .forEach((b) => b.classList.remove("crm-nav-active"));
+        if (btnEl) btnEl.classList.add("crm-nav-active");
+      }
+
+      function openAdminProfileModal() {
+        document.getElementById("adminProfileModal").classList.remove("hidden");
+      }
+
+      function closeAdminProfileModal() {
+        document.getElementById("adminProfileModal").classList.add("hidden");
+      }
+
+      // Customers Data & Working CRUD
+      let customersData = [
+        {
+          id: "CUS-1001",
+          name: "Rajesh Kumar",
+          phone: "+91 98401 22310",
+          company: "Sri Balaji Traders",
+          owner: "Sarah Jenkins",
+          status: "Active",
+        },
+        {
+          id: "CUS-1002",
+          name: "Anitha Devi",
+          phone: "+91 98412 55678",
+          company: "GreenValley Homes",
+          owner: "John Doe",
+          status: "Closed Won",
+        },
+        {
+          id: "CUS-1003",
+          name: "Vikram Prabhu",
+          phone: "+91 97909 44120",
+          company: "TechSpark Solutions",
+          owner: "Bob Johnson",
+          status: "Follow-Up",
+        },
+        {
+          id: "CUS-1004",
+          name: "Meenakshi Sundaram",
+          phone: "+91 98840 77812",
+          company: "Metro Retail Hub",
+          owner: "Alice Smith",
+          status: "Active",
+        },
+        {
+          id: "CUS-1005",
+          name: "Karthikeyan R.",
+          phone: "+91 99402 11904",
+          company: "Apex Constructions",
+          owner: "Emily Brown",
+          status: "Follow-Up",
+        },
+      ];
+
+      function toggleAddCustomerForm() {
+        document.getElementById("addCustomerBox").classList.toggle("hidden");
+      }
+
+      function addNewCustomer(e) {
+        e.preventDefault();
+        const nextId = "CUS-" + (1001 + customersData.length);
+        customersData.unshift({
+          id: nextId,
+          name: document.getElementById("custName").value,
+          phone: document.getElementById("custPhone").value,
+          company: document.getElementById("custCompany").value,
+          owner: "Sarah Jenkins",
+          status: document.getElementById("custStatus").value,
+        });
+        e.target.reset();
+        document.getElementById("addCustomerBox").classList.add("hidden");
+        const total = 195 + customersData.length;
+        document.getElementById("kpiTotalCustomers").textContent = total;
+        document.getElementById("customerNavCount").textContent = total;
+        filterCustomers();
+      }
+
+      function filterCustomers() {
+        const q1 = (
+          document.getElementById("customerSearchInput")?.value || ""
+        ).toLowerCase();
+        const q2 = (
+          document.getElementById("crmGlobalSearch")?.value || ""
+        ).toLowerCase();
+        const query = q1 || q2;
+        const statusFilter =
+          document.getElementById("customerStatusFilter")?.value || "ALL";
+        const tbody = document.getElementById("customersTableBody");
+        tbody.innerHTML = "";
+
+        customersData.forEach((c, idx) => {
+          if (statusFilter !== "ALL" && c.status !== statusFilter) return;
+          if (
+            query &&
+            !`${c.id} ${c.name} ${c.phone} ${c.company} ${c.status}`
+              .toLowerCase()
+              .includes(query)
+          )
+            return;
+
+          const badge =
+            c.status === "Active"
+              ? "bg-emerald-100 text-emerald-700"
+              : c.status === "Closed Won"
+                ? "bg-blue-100 text-blue-700"
+                : "bg-amber-100 text-amber-700";
+
+          tbody.innerHTML += `
+          <tr class="hover:bg-slate-50">
+            <td class="py-3 px-3 font-semibold text-slate-800">${c.id}</td>
+            <td class="py-3 px-3 font-semibold text-slate-900">${c.name}</td>
+            <td class="py-3 px-3 text-slate-600">${c.phone}</td>
+            <td class="py-3 px-3 text-slate-600">${c.company}</td>
+            <td class="py-3 px-3 text-slate-600">${c.owner}</td>
+            <td class="py-3 px-3">
+              <select onchange="updateCustomerStatus(${idx}, this.value)" class="border border-slate-200 rounded px-2 py-1 text-xs font-semibold ${badge}">
+                <option value="Active" ${c.status === "Active" ? "selected" : ""}>Active</option>
+                <option value="Follow-Up" ${c.status === "Follow-Up" ? "selected" : ""}>Follow-Up</option>
+                <option value="Closed Won" ${c.status === "Closed Won" ? "selected" : ""}>Closed Won</option>
+              </select>
+            </td>
+          </tr>
+        `;
+        });
+      }
+
+      function updateCustomerStatus(idx, val) {
+        customersData[idx].status = val;
+        filterCustomers();
+      }
+
+      filterCustomers();
+    </script>
+  </body>
+</html>
